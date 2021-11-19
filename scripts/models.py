@@ -1,8 +1,8 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Table, MetaData
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy import Column, Integer, String, Table, MetaData, inspect
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
+
 
 class Article(Base):
     __tablename__ = "Articles"
@@ -11,15 +11,16 @@ class Article(Base):
     text = Column(String)
     label = Column(Integer)
 
+
 def create_table(engine):
-    if not engine.dialect.has_table(engine, 'Articles'):  # If table don't exist, Create.
+    if not inspect(engine).has_table('Articles'):
         metadata = MetaData(engine)
         # Create a table with the appropriate Columns
         Table('Articles', metadata,
-            Column('id', Integer, primary_key=True, autoincrement=True),
-            Column('source', String),
-            Column('text', String),
-            Column('label', Integer),
-        )
+              Column('id', Integer, primary_key=True, autoincrement=True),
+              Column('source', String),
+              Column('text', String),
+              Column('label', Integer),
+              )
         # Implement the creation
         metadata.create_all()

@@ -81,4 +81,3 @@ class LoadSQL():
 # For testing purposes
 # data_provider = LoadSQL()
 # data = data_provider.get_dataset()
-# print()
