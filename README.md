@@ -19,7 +19,7 @@
 * Label that is important to this project from this dataset
   * Aggregate Label: Reliable, mixed, or Unreliable categorized by article source
 
-# Plan
+## Plan
 1) Use Web Scraping Library to extract cleaned article content and replace the “content” column in SQLite database. 
 2) Create a dataframe from the SQLite Database 
    1) Columns:
@@ -34,7 +34,7 @@
 7) Train CNN model based on labels with the training data 
 8) Test CNN model with the testing data
 
-# Model:
+## Model:
 * Sentence Embedding: Vector for each sentence in the article; Finding the semantics in a context
   * SentenceBERT 
     * BERT is a pre-trained model that understands nuances of the English language 
@@ -44,7 +44,7 @@
   * Below is example of the workflow:
     ![Model Workflow](pictures/model_image.png) 
 
-# Supplementary Tools Used:
+## Supplementary Tools Used:
 * Python Script to make Dataframe from SQLite DB
   * https://github.com/mgruppi/nela-gt-2019 
 * Web Scraping Library for scraping News Articles
