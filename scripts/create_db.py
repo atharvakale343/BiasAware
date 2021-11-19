@@ -1,0 +1,33 @@
+import os
+import sys
+sys.path.insert(0, os.getcwd())
+from scripts.load_sql import LoadSQL
+from webxplore import WebScraper
+from sqlalchemy import create_engine, MetaData, engine
+from sqlalchemy.orm import sessionmaker
+from scripts.models import Article, create_table
+
+
+class CreateDatabase():
+    def __init__(self):
+        db_path = os.path.join('data', 'dataset.db')
+        # Connect to the database using SQLAlchemy
+        engine = create_engine(f"sqlite:///{db_path}")
+        create_table(engine=engine)
+        Session = sessionmaker()
+        Session.configure(bind=engine)
+        self.session: sessionmaker() = Session()
+
+    def populate_db(self):
+        data_provider = LoadSQL()
+        articles = data_provider.get_dataset(sample_size=10)
+        for record in articles.to_dict(orient='records'):
+            text = WebScraper.ScrapeWebsite(record['url']).text_content
+            article = Article(source=record['source'], text=text, label=int(record['label']))
+            self.session.add(article)
+            print()
+        self.session.commit()
+
+db = CreateDatabase()
+db.populate_db()
+
