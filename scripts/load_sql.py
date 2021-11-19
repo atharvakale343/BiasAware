@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import warnings
 
+
 # This script shows an example of how to use NELA-GT-2019 with sqlite3
 
 # Execute a given SQL query on the database and return values
@@ -20,9 +21,7 @@ def execute_query_pandas(path, query):
     return df
 
 
-# Start here
-class LoadSQL():
-    # Make input command line arguments
+class LoadSQL:
     def __init__(self):
         self.path = os.path.join('data', 'nela-gt-2019.db')
         self.csv_path = os.path.join('data', 'labels.csv')
@@ -42,9 +41,11 @@ class LoadSQL():
         return data
 
     # Query 2: select articles from multiple sources
-    def articles_from_sources(self, sources=['thenewyorktimes', 'cnn', 'foxnews']):
-    # Note that we need to add extra quotes around each source's name
-    # for the query to work properly e.g.: "'thenewyorktimes'"
+    def articles_from_sources(self, sources=None):
+        # Note that we need to add extra quotes around each source's name
+        # for the query to work properly e.g.: "'thenewyorktimes'"
+        if sources is None:
+            sources = ['thenewyorktimes', 'cnn', 'foxnews']
         sources_str = ["'%s'" % s for s in sources]
         query = "SELECT * FROM newsdata WHERE source IN (%s)" % ",".join(sources_str)
         data = execute_query_pandas(self.path, query)
@@ -76,7 +77,6 @@ class LoadSQL():
             articles['label'] = articles['source'].map(labels)
             articles.dropna(subset=['label'], inplace=True)
             return articles.groupby('label').apply(lambda x: x.sample(sample_size))
-
 
 # For testing purposes
 # data_provider = LoadSQL()

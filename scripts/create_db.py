@@ -26,9 +26,12 @@ class CreateDatabase:
             article = Article(source=record['source'], text=text, label=int(record['label']))
             self.session.add(article)
         self.session.commit()
+
+    def close_db_conn(self):
         self.session.close()
 
 
 # For testing purposes
 # db = CreateDatabase()
 # db.populate_db()
+# db.close_db_conn()
