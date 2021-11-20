@@ -7,7 +7,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from scripts.models import Article, create_table
 
-
 class CreateDatabase:
     def __init__(self):
         db_path = os.path.join('data', 'dataset.db')
@@ -36,6 +35,6 @@ class CreateDatabase:
 
 
 # For testing purposes
-db = CreateDatabase()
-db.populate_db()
-db.close_db_conn()
+# db = CreateDatabase()
+# db.populate_db()
+# db.close_db_conn()

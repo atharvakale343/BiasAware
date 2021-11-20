@@ -1,4 +1,5 @@
 webxplore
 pandas
 torch
-sentence-transformers
+nltk
+transformers
