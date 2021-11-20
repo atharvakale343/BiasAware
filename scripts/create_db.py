@@ -20,11 +20,15 @@ class CreateDatabase:
 
     def populate_db(self):
         data_provider = LoadSQL()
-        articles = data_provider.get_dataset(sample_size=10)
+        articles = data_provider.get_dataset(sample_size=1000)
         for record in articles.to_dict(orient='records'):
-            text = WebScraper.ScrapeWebsite(record['url']).text_content
-            article = Article(source=record['source'], text=text, label=int(record['label']))
-            self.session.add(article)
+            try:
+                text = WebScraper.ScrapeWebsite(record['url']).text_content
+                article = Article(source=record['source'], text=text, label=int(record['label']))
+                self.session.add(article)
+            except Exception as e:
+                print(f'Error Encountered: {e}')
+                continue
         self.session.commit()
 
     def close_db_conn(self):
@@ -32,6 +36,6 @@ class CreateDatabase:
 
 
 # For testing purposes
-# db = CreateDatabase()
-# db.populate_db()
-# db.close_db_conn()
+db = CreateDatabase()
+db.populate_db()
+db.close_db_conn()
