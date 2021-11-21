@@ -24,7 +24,7 @@ def collate_batch(batch):
     label_list, text_list = [], []
     for (_text, _label) in batch:
         label_list.append(_label)
-        processed_text = [tokenizer(sentence, return_tensors="pt") for sentence in _text]
+        processed_text = [tokenizer(sentence, return_tensors="pt").to(device) for sentence in _text]
         text_list.append(processed_text)
     label_list = torch.tensor(label_list, dtype=torch.int64)
     return text_list, label_list.to(device)
@@ -38,15 +38,24 @@ class BiasDetection(nn.Module):
     def __init__(self):
         super(BiasDetection, self).__init__()
         self.bert_embeddor = AutoModel.from_pretrained("bert-base-uncased")
-        self.linear_layer = nn.Linear(10, 16)
+        self.linear_l1 = nn.Linear(768, 256)
+        self.linear_l2 = nn.Linear(256, 3)  # 3 classes
 
     def forward(self, input_article):
+        # Embed all sentences - TODO
         embedded = self.bert_embeddor(**input_article[0][0])
         embedding_output = embedded[0]
-        print()
+
+        # Extract 1st token embedding
+        # Either define linear layer here or pad all embeddings to fixed value - TODO
+        linear_l1_output = self.linear_l1(embedding_output[:, 0, :].view(-1, 768))
+        linear_l2_output = self.linear_l2(linear_l1_output)
+        return linear_l2_output
 
 
 this_model = BiasDetection()
+this_model.to(device)
 
 for article, label in dataloader:
-    this_model(article)
+    model_output = this_model(article)
+    predicted_label = model_output.argmax(1).item()
