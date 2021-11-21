@@ -15,18 +15,17 @@ data_df = data_access.get_all_articles()
 data_rows = data_access.parse_df_to_dict(data_df)
 
 # Preprocess training input
-pair_input = [(nltk.sent_tokenize(this_dict['text']), this_dict['label']) for this_dict in data_rows]
+pair_input = [(this_dict['text'], this_dict['label']) for this_dict in data_rows]
 
 tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
 
 
 def collate_batch(batch):
     label_list, text_list = [], []
-    for (_text, _label) in batch:
-        label_list.append(_label)
-        processed_text = [tokenizer(sentence, return_tensors="pt").to(device) for sentence in _text]
-        text_list.append(processed_text)
-    label_list = torch.tensor(label_list, dtype=torch.int64)
+    texts = [_text for (_text, _label) in batch]
+    labels = [_label for (_text, _label) in batch]
+    label_list = torch.tensor(labels, dtype=torch.int64)
+    text_list = tokenizer(texts, padding=True, truncation=True, return_tensors="pt").to(device)
     return text_list, label_list.to(device)
 
 
@@ -43,12 +42,12 @@ class BiasDetection(nn.Module):
 
     def forward(self, input_article):
         # Embed all sentences - TODO
-        embedded = self.bert_embeddor(**input_article[0][0])
-        embedding_output = embedded[0]
+        embedded = self.bert_embeddor(**input_article)
+        embedding_output = embedded[1]
 
         # Extract 1st token embedding
         # Either define linear layer here or pad all embeddings to fixed value - TODO
-        linear_l1_output = self.linear_l1(embedding_output[:, 0, :].view(-1, 768))
+        linear_l1_output = self.linear_l1(embedding_output.view(-1, 768))
         linear_l2_output = self.linear_l2(linear_l1_output)
         return linear_l2_output
 
@@ -56,6 +55,19 @@ class BiasDetection(nn.Module):
 this_model = BiasDetection()
 this_model.to(device)
 
-for article, label in dataloader:
-    model_output = this_model(article)
-    predicted_label = model_output.argmax(1).item()
+lossfunction = torch.nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(this_model.parameters(), lr=0.01)
+
+for epoch in range(0, 2):
+    this_model.train()
+    for article_batch, label_batch in dataloader:
+        optimizer.zero_grad()
+        model_output = this_model(article_batch)
+        predicted_label = model_output.argmax(1)
+        loss = lossfunction(model_output, label_batch)
+        loss.backward()
+        optimizer.step()
+        accuracy = (predicted_label==label_batch).sum().item()/16
+        print(f"Current Accuracy: {accuracy}")
+
+print('Done!')
