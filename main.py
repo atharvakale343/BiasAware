@@ -69,5 +69,5 @@ for epoch in range(0, 2):
         optimizer.step()
         accuracy = (predicted_label==label_batch).sum().item()/16
         print(f"Current Accuracy: {accuracy}")
-
+torch.save(this_model.state_dict(), "bias-aware-model.pth")
 print('Done!')
