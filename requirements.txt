@@ -1,5 +1,4 @@
 webxplore
 pandas
 torch
-nltk
 transformers
