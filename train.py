@@ -5,7 +5,7 @@ from models.linearModel import BiasDetectionLinear
 
 
 class Train:
-    def __init__(self, batch_size=2, learning_rate=0.01):
+    def __init__(self, batch_size=2, learning_rate=0.01, epoch_size=2, print_every=25):
         tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
         self.preprocess_obj = PreprocessModel(tokenizer, batch_size=batch_size, repop_db=False, sample_size=1000)
         self.train_dataloader, self.test_dataloader = self.preprocess_obj.get_dataloader()
@@ -15,12 +15,16 @@ class Train:
         self.loss_function = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=learning_rate)
 
-    def train_model(self, nEpochs=2):
-        for epoch in range(0, nEpochs):
+        self.epoch_size = epoch_size
+        self.print_every = print_every
+
+    def train_model(self):
+        for epoch in range(self.epoch_size):
             self.model.train()
 
             total_acc_train = 0
             total_loss_train = 0
+            batch_count = 0
 
             for article_batch, label_batch in self.train_dataloader:
                 model_output = self.model(input_ids=article_batch['input_ids'],
@@ -36,7 +40,9 @@ class Train:
 
                 accuracy = (predicted_label == label_batch).sum().item() / self.preprocess_obj.batch_size
                 total_acc_train += accuracy
-                print(f"Current Batch Accuracy: {accuracy}")
+
+                if batch_count % self.print_every == 0:
+                    print(f"Current Batch Accuracy: {accuracy}")
 
             total_acc_val, total_loss_val = self.test_model()
 
@@ -70,5 +76,5 @@ class Train:
         return total_acc_val, total_loss_val
 
 
-# bias_aware = Train(batch_size=2, learning_rate=0.01)
+# bias_aware = Train(batch_size=2, learning_rate=0.01, epoch_size=2, print_every=25)
 # bias_aware.train_model()
