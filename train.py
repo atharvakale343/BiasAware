@@ -44,6 +44,8 @@ class Train:
                 if batch_count % self.print_every == 0:
                     print(f"Current Batch Accuracy: {accuracy}")
 
+                batch_count += 1
+
             total_acc_val, total_loss_val = self.test_model()
 
             print(
