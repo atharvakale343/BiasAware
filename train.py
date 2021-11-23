@@ -24,9 +24,8 @@ class Train:
 
             total_acc_train = 0
             total_loss_train = 0
-            batch_count = 0
 
-            for article_batch, label_batch in self.train_dataloader:
+            for batch_count, (article_batch, label_batch) in enumerate(self.train_dataloader):
                 model_output = self.model(input_ids=article_batch['input_ids'],
                                           attention_mask=article_batch['attention_mask'])
                 predicted_label = model_output.argmax(1)
@@ -43,8 +42,6 @@ class Train:
 
                 if batch_count % self.print_every == 0:
                     print(f"Current Batch Accuracy: {accuracy}")
-
-                batch_count += 1
 
             total_acc_val, total_loss_val = self.test_model()
 
