@@ -5,10 +5,10 @@ import torch
 
 
 class PreprocessModel:
-    def __init__(self, tokenizer, repop_db=False, sample_size=1000):
+    def __init__(self, tokenizer, batch_size=2, repop_db=False, sample_size=1000):
         if repop_db:
             self.create_database(sample_size)
-        self.batch_size = 16
+        self.batch_size = batch_size
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.tokenizer = tokenizer
 
@@ -24,10 +24,18 @@ class PreprocessModel:
 
     def preprocess_input(self, list_rows, exclude_labels=None):
         if not exclude_labels:
-            exclude_labels = [1]
+            exclude_labels = {1}
 
-        return [(this_dict['text'], this_dict['label']) for this_dict in list_rows if
-                this_dict['label'] not in exclude_labels]
+        to_return = []
+        for this_dict in list_rows:
+            if this_dict['label'] in exclude_labels:
+                continue
+            if this_dict['label'] > min(exclude_labels):
+                this_dict['label'] -= min(exclude_labels)
+
+            to_return.append((this_dict['text'], this_dict['label']))
+
+        return to_return
 
     def collate_batch(self, batch):
         label_list, text_list = [], []
@@ -37,8 +45,16 @@ class PreprocessModel:
         text_list = self.tokenizer(texts, padding=True, truncation=True, return_tensors="pt").to(self.device)
         return text_list, label_list.to(self.device)
 
-    def get_dataloader(self):
+    def get_dataloader(self, test_size=0.2):
         data_rows = self.access_database()
         pair_input = self.preprocess_input(data_rows)
-        return DataLoader(pair_input, batch_size=self.batch_size,
+        
+        test_size = int(test_size * len(pair_input))
+        train_size = len(pair_input) - test_size
+        train_dataset, test_dataset = torch.utils.data.random_split(pair_input, [train_size, test_size])
+        train_dl = DataLoader(train_dataset, batch_size=self.batch_size,
                           shuffle=True, collate_fn=self.collate_batch)
+        test_dl = DataLoader(test_dataset, batch_size=self.batch_size,
+                          shuffle=True, collate_fn=self.collate_batch)
+
+        return train_dl, test_dl
