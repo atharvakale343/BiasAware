@@ -11,7 +11,6 @@ class BiasDetectionLinear(nn.Module):
         # self.linear_l1 = nn.Linear(768, 256)
         # self.relu_act = nn.ReLU()
         self.linear_lf = nn.Linear(768, n_classes)  # f{n_classes} classes
-        self.softmax_activation = nn.Softmax()
 
     def forward(self, input_ids, attention_mask):
         _, pooled_output = self.bert_embeddor(input_ids=input_ids, attention_mask=attention_mask, return_dict=False)
@@ -19,5 +18,4 @@ class BiasDetectionLinear(nn.Module):
         # linear_l1_output = self.linear_l1(dropout_l_output)
         # activated_output = self.relu_act(dropout_l_output)
         linear_l_output = self.linear_lf(dropout_l_output)
-        activated_output_soft = self.softmax_activation(linear_l_output)
-        return activated_output_soft
+        return linear_l_output
