@@ -45,16 +45,23 @@ class PreprocessModel:
         text_list = self.tokenizer(texts, padding=True, truncation=True, return_tensors="pt").to(self.device)
         return text_list, label_list.to(self.device)
 
-    def get_dataloader(self, test_size=0.2):
+    def get_dataloader(self, val_size=0.05, test_size=0.15):
         data_rows = self.access_database()
         pair_input = self.preprocess_input(data_rows)
+        total_count = len(pair_input)
 
-        test_size = int(test_size * len(pair_input))
-        train_size = len(pair_input) - test_size
-        train_dataset, test_dataset = torch.utils.data.random_split(pair_input, [train_size, test_size])
+        test_count = int(test_size * total_count)
+        valid_count = int(val_size * total_count)
+        train_count = total_count - test_count - valid_count
+        train_dataset, valid_dataset, test_dataset = torch.utils.data.random_split(
+            pair_input, (train_count, valid_count, test_count)
+        )
+
         train_dl = DataLoader(train_dataset, batch_size=self.batch_size,
                               shuffle=True, collate_fn=self.collate_batch)
+        val_dl = DataLoader(valid_dataset, batch_size=self.batch_size,
+                            shuffle=True, collate_fn=self.collate_batch)
         test_dl = DataLoader(test_dataset, batch_size=self.batch_size,
                              shuffle=True, collate_fn=self.collate_batch)
 
-        return train_dl, test_dl
+        return train_dl, val_dl, test_dl
