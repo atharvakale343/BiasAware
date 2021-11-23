@@ -48,13 +48,13 @@ class PreprocessModel:
     def get_dataloader(self, test_size=0.2):
         data_rows = self.access_database()
         pair_input = self.preprocess_input(data_rows)
-        
+
         test_size = int(test_size * len(pair_input))
         train_size = len(pair_input) - test_size
         train_dataset, test_dataset = torch.utils.data.random_split(pair_input, [train_size, test_size])
         train_dl = DataLoader(train_dataset, batch_size=self.batch_size,
-                          shuffle=True, collate_fn=self.collate_batch)
+                              shuffle=True, collate_fn=self.collate_batch)
         test_dl = DataLoader(test_dataset, batch_size=self.batch_size,
-                          shuffle=True, collate_fn=self.collate_batch)
+                             shuffle=True, collate_fn=self.collate_batch)
 
         return train_dl, test_dl

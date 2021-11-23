@@ -23,8 +23,8 @@ class Train:
             total_loss_train = 0
 
             for article_batch, label_batch in self.train_dataloader:
-                model_output = self.model(input_ids=article_batch['input_ids'], 
-                                        attention_mask=article_batch['attention_mask'])
+                model_output = self.model(input_ids=article_batch['input_ids'],
+                                          attention_mask=article_batch['attention_mask'])
                 predicted_label = model_output.argmax(1)
 
                 loss = self.loss_function(model_output, label_batch)
@@ -45,7 +45,7 @@ class Train:
                 | Train Accuracy: {total_acc_train / len(self.train_dataloader): .3f} \
                 | Val Loss: {total_loss_val / len(self.test_dataloader): .3f} \
                 | Val Accuracy: {total_acc_val / len(self.test_dataloader): .3f}')
-        
+
         torch.save(self.model.state_dict(), "bias-aware-model.pth")
         print('Done!')
 
@@ -58,7 +58,7 @@ class Train:
         with torch.no_grad():
             for article_batch, label_batch in self.test_dataloader:
                 model_output = self.model(input_ids=article_batch['input_ids'],
-                                        attention_mask=article_batch['attention_mask'])
+                                          attention_mask=article_batch['attention_mask'])
                 predicted_label = model_output.argmax(1)
 
                 accuracy = (predicted_label == label_batch).sum().item() / self.preprocess_obj.batch_size
@@ -66,9 +66,9 @@ class Train:
 
                 loss = self.loss_function(model_output, label_batch)
                 total_loss_val += loss.item()
-        
+
         return total_acc_val, total_loss_val
 
 
-bias_aware = Train(batch_size=2, learning_rate=0.01)
-bias_aware.train_model()
+# bias_aware = Train(batch_size=2, learning_rate=0.01)
+# bias_aware.train_model()
