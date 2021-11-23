@@ -17,9 +17,9 @@ class CreateDatabase:
         self.session = Session()
         create_table(engine=engine)
 
-    def populate_db(self):
+    def populate_db(self, sample_size=1000):
         data_provider = LoadSQL()
-        articles = data_provider.get_dataset(sample_size=1000)
+        articles = data_provider.get_dataset(sample_size=sample_size)
         for record in articles.to_dict(orient='records'):
             try:
                 text = WebScraper.ScrapeWebsite(record['url']).text_content
