@@ -33,5 +33,8 @@ class BiasDetectionCnn(nn.Module):
         concatenated_out = (torch.cat(max_pooled_out, dim=-1))
 
         dropout_l_output = self.dropout_l(concatenated_out)
+
+        # linear_l_output: [batch_size, n_classes]
         linear_l_output = self.linear_lf(dropout_l_output)
+
         return linear_l_output
