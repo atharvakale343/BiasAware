@@ -2,21 +2,29 @@ import torch
 from transformers import AutoTokenizer
 from preprocess import PreprocessModel
 from models.linearModel import BiasDetectionLinear
+from models.cnnModel import BiasDetectionCnn
 
 
 class Train:
-    def __init__(self, batch_size=16, learning_rate=2e-5, epoch_size=2, print_every=25, sample_size=1000):
+    def __init__(self, batch_size=16, learning_rate=2e-5, epoch_size=2, print_every=25, sample_size=1000,
+                 model_type='cnn'):
         tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
         self.preprocess_obj = PreprocessModel(tokenizer, batch_size=batch_size, repop_db=False, sample_size=sample_size)
         self.train_dataloader, self.val_dataloader, self.test_dataloader = self.preprocess_obj.get_dataloader()
-
-        self.model = BiasDetectionLinear(n_classes=2)
+        self.model = self.return_model(model_type)(n_classes=2)
         self.model.to(self.preprocess_obj.device)
         self.loss_function = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=learning_rate)
 
         self.epoch_size = epoch_size
         self.print_every = print_every
+
+    def return_model(self, model_type):
+        dict_models_type = {
+            'linear': BiasDetectionLinear,
+            'cnn': BiasDetectionCnn
+        }
+        return dict_models_type[model_type]
 
     def train_model(self):
         for epoch in range(self.epoch_size):
@@ -41,7 +49,7 @@ class Train:
                 total_acc_train += accuracy
 
                 if batch_count % self.print_every == 0:
-                    print(f"Current Batch Accuracy: {accuracy}")
+                    print(f"Current Train Accuracy: {total_acc_train}")
 
             total_acc_val, total_loss_val = self.val_model(self.val_dataloader)
 
@@ -81,5 +89,5 @@ class Train:
         return total_acc_val, total_loss_val
 
 
-# bias_aware = Train(batch_size=16, learning_rate=2e-5, epoch_size=2, print_every=25, sample_size=100)
-# bias_aware.train_model()
+bias_aware = Train(batch_size=16, learning_rate=2e-5, epoch_size=2, print_every=25, sample_size=100, model_type='cnn')
+bias_aware.train_model()
