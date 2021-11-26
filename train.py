@@ -49,8 +49,8 @@ class Train:
                 accuracy = (predicted_label == label_batch).sum().item() / self.preprocess_obj.batch_size
                 total_acc_train += accuracy
 
-                if batch_count % self.print_every == 0:
-                    print(f"Current Train Accuracy: {total_acc_train}")
+                if batch_count % self.print_every == 0 and batch_count != 0:
+                    print(f"Current Train Accuracy: {total_acc_train / batch_count: .3f}")
 
             total_acc_val, total_loss_val = self.val_model(self.val_dataloader)
 
