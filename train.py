@@ -89,5 +89,6 @@ class Train:
         return total_acc_val, total_loss_val
 
 
-bias_aware = Train(batch_size=16, learning_rate=2e-5, epoch_size=2, print_every=25, sample_size=100, model_type='cnn')
-bias_aware.train_model()
+# bias_aware = Train(batch_size=16, learning_rate=2e-5, epoch_size=2, print_every=25, sample_size=100, model_type='cnn',
+#                    torch_device='cpu')
+# bias_aware.train_model()

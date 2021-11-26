@@ -5,11 +5,11 @@ import torch
 
 
 class PreprocessModel:
-    def __init__(self, tokenizer, batch_size=2, repop_db=False, sample_size=1000):
+    def __init__(self, tokenizer, batch_size=2, repop_db=False, sample_size=1000, torch_device='cuda'):
         if repop_db:
             self.create_database(sample_size)
         self.batch_size = batch_size
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(torch_device)
         self.tokenizer = tokenizer
 
     def create_database(self, sample_size):
