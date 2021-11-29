@@ -4,7 +4,7 @@ from transformers import AutoModel
 
 class BiasDetectionLinear(nn.Module):
 
-    def __init__(self, dropout_c=0.5, n_classes=2):
+    def __init__(self, dropout_c=0.5, n_classes=2, num_filters=None):
         super(BiasDetectionLinear, self).__init__()
         self.bert_embedding = AutoModel.from_pretrained("bert-base-uncased")
         self.dropout_l = nn.Dropout(dropout_c)

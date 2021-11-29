@@ -7,12 +7,12 @@ from models.cnnModel import BiasDetectionCnn
 
 class Train:
     def __init__(self, batch_size=16, learning_rate=2e-5, epoch_size=2, print_every=25, sample_size=1000,
-                 model_type='cnn', torch_device='cuda'):
+                 model_type='cnn', torch_device='cuda', n_filters=64):
         tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
         self.preprocess_obj = PreprocessModel(tokenizer, batch_size=batch_size, repop_db=False, sample_size=sample_size,
                                               torch_device=torch_device)
         self.train_dataloader, self.val_dataloader, self.test_dataloader = self.preprocess_obj.get_dataloader()
-        self.model = self.return_model(model_type)(n_classes=2)
+        self.model = self.return_model(model_type)(n_classes=2, n_filters=n_filters)
         self.model.to(self.preprocess_obj.device)
         self.loss_function = torch.nn.CrossEntropyLoss()
         self.optimizer = torch.optim.AdamW(self.model.parameters(), lr=learning_rate)
@@ -91,5 +91,5 @@ class Train:
 
 
 # bias_aware = Train(batch_size=16, learning_rate=2e-5, epoch_size=2, print_every=25, sample_size=100, model_type='cnn',
-#                    torch_device='cpu')
+#                    torch_device='cpu', n_filters=64)
 # bias_aware.train_model()

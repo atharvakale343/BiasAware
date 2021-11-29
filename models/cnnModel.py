@@ -5,14 +5,13 @@ import torch
 
 
 class BiasDetectionCnn(nn.Module):
-    def __init__(self, dropout_c=0.5, n_classes=2, num_filters=3):
+    def __init__(self, dropout_c=0.5, n_classes=2, n_filters=64, list_kernel_sizes=(10, 50, 100)):
         super(BiasDetectionCnn, self).__init__()
-        list_kernel_sizes = [2, 3, 4]
         self.bert_embedding = AutoModel.from_pretrained("bert-base-uncased")
-        self.convolutions = nn.ModuleList([nn.Conv1d(768, num_filters, K) for K in list_kernel_sizes])
+        self.convolutions = nn.ModuleList([nn.Conv1d(768, n_filters, K) for K in list_kernel_sizes])
         self.relu_act = nn.ReLU()
         self.dropout_l = nn.Dropout(dropout_c)
-        self.linear_lf = nn.Linear(len(list_kernel_sizes) * num_filters, n_classes)  # f{n_classes} classes
+        self.linear_lf = nn.Linear(len(list_kernel_sizes) * n_filters, n_classes)  # f{n_classes} classes
 
     def forward(self, input_ids, attention_mask):
         # sequence_output: [batch_size, seq_len, embedding_dim]
