@@ -3,6 +3,7 @@ from transformers import AutoTokenizer
 from preprocess import PreprocessModel
 from models.linearModel import BiasDetectionLinear
 from models.cnnModel import BiasDetectionCnn
+from models.CNN_BiLSTM_Model import BiasDetectionCnnBiLSTM
 
 
 class Train:
@@ -23,7 +24,8 @@ class Train:
     def return_model(self, model_type):
         dict_models_type = {
             'linear': BiasDetectionLinear,
-            'cnn': BiasDetectionCnn
+            'cnn': BiasDetectionCnn,
+            'cnn_biLSTM': BiasDetectionCnnBiLSTM,
         }
         return dict_models_type[model_type]
 
@@ -90,6 +92,6 @@ class Train:
         return total_acc_val, total_loss_val
 
 
-# bias_aware = Train(batch_size=16, learning_rate=2e-5, epoch_size=2, print_every=25, sample_size=100, model_type='cnn',
+# bias_aware = Train(batch_size=16, learning_rate=2e-5, epoch_size=2, print_every=25, sample_size=100, model_type='cnn_biLSTM',
 #                    torch_device='cpu', n_filters=64)
 # bias_aware.train_model()
