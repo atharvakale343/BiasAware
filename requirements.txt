@@ -2,3 +2,4 @@ webxplore
 pandas
 torch
 transformers
+asyncio
