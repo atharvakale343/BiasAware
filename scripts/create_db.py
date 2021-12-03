@@ -20,9 +20,11 @@ class CreateDatabase:
     def populate_db(self, sample_size=1000):
         data_provider = LoadSQL()
         articles = data_provider.get_dataset(sample_size=sample_size)
-        for record in articles.to_dict(orient='records'):
+        for i, record in enumerate(articles.to_dict(orient='records')):
             try:
-                text = WebScraper.ScrapeWebsite(record['url']).text_content
+                text = WebScraper.ScrapeWebsite(record['url'], timeout=5).text_content
+                if not i%25:
+                    print(i)
                 article = Article(source=record['source'], text=text, label=int(record['label']))
                 self.session.add(article)
             except Exception as e:
@@ -36,5 +38,5 @@ class CreateDatabase:
 
 # For testing purposes
 # db = CreateDatabase()
-# db.populate_db()
+# db.populate_db(sample_size=10_000)
 # db.close_db_conn()

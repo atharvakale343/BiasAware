@@ -6,7 +6,7 @@ from models.cnnModel import BiasDetectionCnn
 
 
 class Train:
-    def __init__(self, batch_size=16, learning_rate=2e-5, epoch_size=2, print_every=25, sample_size=1000,
+    def __init__(self, batch_size=16, learning_rate=2e-5, epoch_size=20, print_every=25, sample_size=1000,
                  model_type='cnn', torch_device='cuda', n_filters=64):
         tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
         self.preprocess_obj = PreprocessModel(tokenizer, batch_size=batch_size, repop_db=False, sample_size=sample_size,
