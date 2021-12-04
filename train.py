@@ -40,8 +40,13 @@ class Train:
             total_loss_train = 0
 
             for batch_count, (article_batch, label_batch) in enumerate(self.train_dataloader):
-                model_output = self.model(input_ids=article_batch['input_ids'],
-                                          attention_mask=article_batch['attention_mask'])
+                try:
+                    model_output = self.model(input_ids=article_batch['input_ids'],
+                                              attention_mask=article_batch['attention_mask'])
+                except RuntimeError as err:
+                    print(f'Error Encountered : {err}')
+                    continue
+
                 predicted_label = model_output.argmax(1)
 
                 loss = self.loss_function(model_output, label_batch)
@@ -82,8 +87,13 @@ class Train:
 
         with torch.no_grad():
             for article_batch, label_batch in dataloader_input:
-                model_output = self.model(input_ids=article_batch['input_ids'],
-                                          attention_mask=article_batch['attention_mask'])
+                try:
+                    model_output = self.model(input_ids=article_batch['input_ids'],
+                                              attention_mask=article_batch['attention_mask'])
+                except RuntimeError as err:
+                    print(f'Error Encountered : {err}')
+                    continue
+
                 predicted_label = model_output.argmax(1)
 
                 accuracy = (predicted_label == label_batch).sum().item() / self.preprocess_obj.batch_size
