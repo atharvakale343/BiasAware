@@ -14,6 +14,7 @@ class Train:
         self.preprocess_obj = PreprocessModel(tokenizer, batch_size=batch_size, repop_db=False, sample_size=sample_size,
                                               torch_device=torch_device)
         self.train_dataloader, self.val_dataloader, self.test_dataloader = self.preprocess_obj.get_dataloader()
+        self.model_type = model_type
         self.model = self.return_model(model_type)(n_classes=2, n_filters=n_filters)
         self.model.to(self.preprocess_obj.device)
         self.loss_function = torch.nn.CrossEntropyLoss()
@@ -64,7 +65,7 @@ class Train:
                 | Val Loss: {total_loss_val / len(self.val_dataloader): .3f} \
                 | Val Accuracy: {total_acc_val / len(self.val_dataloader): .3f}')
 
-        torch.save(self.model.state_dict(), "bias-aware-model.pth")
+        torch.save(self.model.state_dict(), f"bias-aware-model-{self.model_type}.pth")
         total_acc_test, total_loss_test = self.val_model(self.test_dataloader)
 
         print(
@@ -94,6 +95,6 @@ class Train:
         return total_acc_val, total_loss_val
 
 
-# bias_aware = Train(batch_size=16, learning_rate=2e-5, epoch_size=2, print_every=25, sample_size=100, model_type='biLSTM',
-#                    torch_device='cpu', n_filters=64)
+# bias_aware = Train(batch_size=16, learning_rate=2e-5, epoch_size=2, print_every=25, sample_size=100,
+#                    model_type='cnn', torch_device='cpu', n_filters=64)
 # bias_aware.train_model()

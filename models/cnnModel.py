@@ -8,7 +8,7 @@ class BiasDetectionCnn(nn.Module):
     def __init__(self, dropout_c=0.5, n_classes=2, n_filters=64, list_kernel_sizes=(10, 50, 100)):
         super(BiasDetectionCnn, self).__init__()
         self.bert_embedding = AutoModel.from_pretrained("bert-base-uncased")
-        self.convolutions = nn.ModuleList([nn.Conv1d(768, n_filters, K) for K in list_kernel_sizes])
+        self.convolutions = nn.ModuleList([nn.Conv1d(768, n_filters, K, padding=1) for K in list_kernel_sizes])
         self.relu_act = nn.ReLU()
         self.dropout_l = nn.Dropout(dropout_c)
         self.linear_lf = nn.Linear(len(list_kernel_sizes) * n_filters, n_classes)  # f{n_classes} classes
