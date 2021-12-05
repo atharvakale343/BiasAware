@@ -104,9 +104,9 @@ class RunModel:
         plt.plot(fpr, tpr)
         plt.xlim([0.0, 1.0])
         plt.ylim([0.0, 1.0])
-        plt.title('ROC curve for heart stroke prediction')
-        plt.xlabel('False Positive Rate (1 - Specificity)')
-        plt.ylabel('True Positive Rate (Sensitivity)')
+        plt.title('ROC curve for Bias Prediction')
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
         plt.grid(True)
 
         print(f"Area Under ROC Curve: {metrics.roc_auc_score(actual_labels, predicted_labels)}\n")
