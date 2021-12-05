@@ -141,3 +141,6 @@ dmypy.json
 nela-gt-2019.db
 !dataset.db
 bias-aware-model.pth
+
+# Saved Models
+saved_models/*
