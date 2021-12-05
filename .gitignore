@@ -143,4 +143,4 @@ nela-gt-2019.db
 bias-aware-model.pth
 
 # Saved Models
-saved_models/*
+saved_models/*.pth
