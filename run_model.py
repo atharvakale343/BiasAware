@@ -47,6 +47,7 @@ class RunModel:
         this_model = self.ModelClasses[self.model_type](**kwargs)
         state_dict = torch.load(self.paths[self.model_type], map_location=self.device)
         this_model.load_state_dict(state_dict)
+        this_model.to(self.device)
         return this_model
 
     def get_predictions(self, input_model, load_dataloader=False, load_dataloader_file='test.pth'):
