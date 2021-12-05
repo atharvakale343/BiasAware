@@ -9,6 +9,7 @@ from preprocess import PreprocessModel
 from sklearn import metrics
 import seaborn as sb
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class RunModel:
@@ -71,13 +72,41 @@ class RunModel:
 
     @staticmethod
     def get_metrics(predicted_labels, actual_labels):
+        RunModel.print_accuracy(predicted_labels, actual_labels)
+        RunModel.print_confusion_matrix(predicted_labels, actual_labels)
+        RunModel.print_f1_score(predicted_labels, actual_labels)
+        RunModel.print_roc_curve(predicted_labels, actual_labels)
+
+    @staticmethod
+    def print_accuracy(predicted_labels, actual_labels):
         accuracy = sum(
             [pred_label == actual_label for pred_label, actual_label in zip(predicted_labels, actual_labels)]) / len(
             predicted_labels)
 
         print(f'Accuracy: {accuracy}')
 
-        conf = metrics.confusion_matrix(predicted_labels, actual_labels)
+    @staticmethod
+    def print_confusion_matrix(predicted_labels, actual_labels):
+        conf = metrics.confusion_matrix(actual_labels, predicted_labels)
         print("Confusion Matrix : \n", conf)
 
         sb.heatmap(conf / np.sum(conf), annot=True, fmt='0.2%', cmap='Reds')
+
+    @staticmethod
+    def print_f1_score(predicted_labels, actual_labels):
+        f1 = metrics.f1_score(actual_labels, predicted_labels)
+        print("F1 Score : \n", f1)
+
+    @staticmethod
+    def print_roc_curve(predicted_labels, actual_labels):
+        fpr, tpr, thresholds = metrics.roc_curve(actual_labels, predicted_labels)
+
+        plt.plot(fpr, tpr)
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.0])
+        plt.title('ROC curve for heart stroke prediction')
+        plt.xlabel('False Positive Rate (1 - Specificity)')
+        plt.ylabel('True Positive Rate (Sensitivity)')
+        plt.grid(True)
+
+        print(f"Area Under ROC Curve: {metrics.roc_auc_score(actual_labels, predicted_labels)}\n")
