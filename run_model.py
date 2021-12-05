@@ -36,7 +36,8 @@ class RunModel:
 
     def get_or_load_dataloader(self, load_dataloader, load_dataloader_file):
         if load_dataloader:
-            return torch.load(os.path.join(self.path_to_models, load_dataloader_file))
+            return torch.load(os.path.join(self.path_to_models, load_dataloader_file),
+                              map_location=self.device)
         else:
             _, _, test_dataloader = self.preprocess_obj.get_dataloader()
             return test_dataloader
